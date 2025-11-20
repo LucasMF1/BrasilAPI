@@ -138,5 +138,56 @@ function sortByDate(holidays) {
 export default function getHolidays(year) {
   const easterHolidays = getEasterHolidays(year);
   const nationalHolidays = getNationalHolidays(year);
-  return sortByDate([...easterHolidays, ...nationalHolidays]);
+
+  const combinedHolidays = [...easterHolidays, ...nationalHolidays];
+  const sortedHolidays = sortByDate(combinedHolidays);
+
+  return attachWeekdayToHolidays(sortedHolidays);
+}
+
+const WEEKDAY_NAMES = [
+  'domingo',
+  'segunda-feira',
+  'terça-feira',
+  'quarta-feira',
+  'quinta-feira',
+  'sexta-feira',
+  'sábado',
+];
+
+function parseISODate(dateISO) {
+  const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (!isoDateRegex.test(dateISO)) {
+    throw new Error('Data ISO inválida (esperado formato YYYY-MM-DD).');
+  }
+
+  const date = new Date(`${dateISO}T00:00:00Z`);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new Error('Data ISO inválida (não pôde ser convertida em Date).');
+  }
+
+  return date;
+}
+
+export function getWeekdayName(dateISO) {
+  const date = parseISODate(dateISO);
+  const weekdayIndex = date.getUTCDay();
+
+  return WEEKDAY_NAMES[weekdayIndex];
+}
+function attachWeekdayToHoliday(holiday) {
+  return {
+    ...holiday,
+    weekday: getWeekdayName(holiday.date),
+  };
+}
+
+export function attachWeekdayToHolidays(holidays) {
+  if (!Array.isArray(holidays)) {
+    throw new Error('Parâmetro inválido: holidays deve ser um array.');
+  }
+
+  return holidays.map(attachWeekdayToHoliday);
 }

@@ -2,6 +2,11 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': process.cwd(),
+    },
+  },
   test: {
     setupFiles: ['./tests/helpers/server/setup.js'],
     globals: false,
