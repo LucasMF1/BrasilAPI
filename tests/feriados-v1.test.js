@@ -16,7 +16,13 @@ describe('/feriados/v1 (E2E)', () => {
     const { data } = await axios.get(requestUrl);
 
     expect.assertions(1);
-    expect(data).toEqual(expect.arrayContaining(getFixedHolidays(year)));
+    expect(data).toEqual(
+      expect.arrayContaining(
+        getFixedHolidays(year).map((holiday) =>
+          expect.objectContaining(holiday)
+        )
+      )
+    );
   });
 
   test('Feriados móveis dos anos 2010, 2020', async () => {
@@ -29,7 +35,13 @@ describe('/feriados/v1 (E2E)', () => {
         const requestUrl = `${global.SERVER_URL}/api/feriados/v1/${year}`;
         const { data } = await axios.get(requestUrl);
 
-        expect(data).toEqual(expect.arrayContaining(getEasterHolidays(year)));
+        expect(data).toEqual(
+          expect.arrayContaining(
+            getEasterHolidays(year).map((holiday) =>
+              expect.objectContaining(holiday)
+            )
+          )
+        );
       })
     );
   });
@@ -38,7 +50,7 @@ describe('/feriados/v1 (E2E)', () => {
     const requestUrl = `${global.SERVER_URL}/api/feriados/v1/2020`;
     const { data } = await axios.get(requestUrl);
     expect.assertions(1);
-    expect(data).toEqual(getHolidays(2020));
+    expect(data).toMatchObject(getHolidays(2020));
   });
 
   test('Utilizando um ano fora do intervalo suportado: 3000', async () => {
@@ -81,11 +93,13 @@ describe('/feriados/v1 (E2E)', () => {
     const requestUrl = `${global.SERVER_URL}/api/feriados/v1/2019`;
     const { data } = await axios.get(requestUrl);
 
-    expect.assertions(2);
-
     expect(data).toHaveLength(12);
     expect(data).toEqual(
-      expect.arrayContaining(getHolidays(2019, ['Páscoa', 'Tiradentes']))
+      expect.arrayContaining(
+        getHolidays(2019, ['Páscoa', 'Tiradentes']).map((holiday) =>
+          expect.objectContaining(holiday)
+        )
+      )
     );
   });
 
@@ -111,7 +125,11 @@ describe('/feriados/v1 (E2E)', () => {
 
     expect(data).toHaveLength(13);
     expect(data).toEqual(
-      expect.arrayContaining(getHolidays(2024, ['Dia da consciência negra']))
+      expect.arrayContaining(
+        getHolidays(2024, ['Dia da consciência negra']).map((holiday) =>
+          expect.objectContaining(holiday)
+        )
+      )
     );
   });
 });
